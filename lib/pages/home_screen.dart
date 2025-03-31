@@ -117,6 +117,24 @@ class HomeScreen extends StatelessWidget {
                   Navigator.pushNamed(context, '/dados');
                 },
               ),
+              const Divider(color: Colors.white24),
+              // Novo item: Encontros
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.flash_on, color: Colors.white),
+                title: const Text(
+                  'Encontros',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/encontro');
+                },
+              ),
             ],
           ),
         ),

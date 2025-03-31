@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EncounterPage extends StatefulWidget {
   const EncounterPage({Key? key}) : super(key: key);
@@ -14,11 +15,11 @@ class _EncounterPageState extends State<EncounterPage> {
   final Random _random = Random();
   List<dynamic> _allMonsters = [];
   List<dynamic> _allItems = [];
+  List<dynamic> _savedEncounters = [];
 
   // Configurações do encontro
-  String _selectedEncounterDifficulty =
-      'Fácil'; // opções: Fácil, Médio, Difícil
-  String _selectedMonsterQty = 'Aleatório'; // ou um número em string
+  String _selectedEncounterDifficulty = 'Fácil'; // Fácil, Médio, Difícil
+  String _selectedMonsterQty = 'Aleatório'; // ou número em string
   String _selectedRewardRarity = 'Comum'; // Comum, Incomum, Raro, Mítico
   String _selectedItemQty = 'Aleatório'; // ou número
 
@@ -27,6 +28,7 @@ class _EncounterPageState extends State<EncounterPage> {
     super.initState();
     _loadMonsters();
     _loadItems();
+    _loadSavedEncounters();
   }
 
   Future<void> _loadMonsters() async {
@@ -43,7 +45,91 @@ class _EncounterPageState extends State<EncounterPage> {
     });
   }
 
-  // Converte o nível de desafio (ND) do monstro para double
+  Future<void> _loadSavedEncounters() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? saved = prefs.getString('saved_encounters');
+    if (saved != null) {
+      setState(() {
+        _savedEncounters = json.decode(saved);
+      });
+    }
+  }
+
+  Future<void> _saveEncounters() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_encounters', json.encode(_savedEncounters));
+  }
+
+  Future<void> _saveEncounter(Map<String, dynamic> encounter) async {
+    setState(() {
+      _savedEncounters.add(encounter);
+    });
+    await _saveEncounters();
+  }
+
+  Future<void> _deleteEncounter(int index) async {
+    setState(() {
+      _savedEncounters.removeAt(index);
+    });
+    await _saveEncounters();
+  }
+
+  Future<bool> _showDeleteConfirmation() async {
+    return await showDialog<bool>(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                backgroundColor: const Color(0xFF121212),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(color: Color(0xFF1B5E20), width: 2),
+                ),
+                title: const Text(
+                  'Confirmar Exclusão',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                content: const Text(
+                  'Deseja realmente excluir este encontro?',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    fontSize: 16,
+                    color: Colors.white70,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text(
+                      'Cancelar',
+                      style: TextStyle(
+                        fontFamily: 'UncialAntiqua',
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text(
+                      'Excluir',
+                      style: TextStyle(
+                        fontFamily: 'UncialAntiqua',
+                        fontSize: 16,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        ) ??
+        false;
+  }
+
   double parseND(String nd) {
     nd = nd.trim();
     if (nd.contains('/')) {
@@ -57,11 +143,6 @@ class _EncounterPageState extends State<EncounterPage> {
     return double.tryParse(nd) ?? 0;
   }
 
-  // Filtra os monstros conforme a dificuldade do encontro
-  // Mapeamento:
-  // - Encontro Fácil: selecionar monstros com ND <= 1
-  // - Encontro Médio: ND > 1 e <= 4
-  // - Encontro Difícil: ND > 4
   List<dynamic> _filterMonstersByDifficulty() {
     return _allMonsters.where((monster) {
       double nd = parseND(monster['nivelDesafio'].toString());
@@ -76,7 +157,6 @@ class _EncounterPageState extends State<EncounterPage> {
     }).toList();
   }
 
-  // Filtra os itens pela raridade
   List<dynamic> _filterItemsByRarity() {
     return _allItems.where((item) {
       return item['raridade'].toString().toLowerCase() ==
@@ -84,7 +164,6 @@ class _EncounterPageState extends State<EncounterPage> {
     }).toList();
   }
 
-  // Retorna o número máximo de monstros com base na dificuldade selecionada
   int getMaxMonsters() {
     if (_selectedEncounterDifficulty == 'Fácil') return 4;
     if (_selectedEncounterDifficulty == 'Médio') return 3;
@@ -92,7 +171,6 @@ class _EncounterPageState extends State<EncounterPage> {
     return 1;
   }
 
-  // Retorna o número máximo de itens para a raridade selecionada
   int getMaxItems() {
     switch (_selectedRewardRarity.toLowerCase()) {
       case 'comum':
@@ -108,59 +186,60 @@ class _EncounterPageState extends State<EncounterPage> {
     }
   }
 
-  // Widget para criar um Dropdown com opções fornecidas
   Widget _buildDropdown(
     String label,
     String currentValue,
     List<String> options,
     ValueChanged<String?> onChanged,
   ) {
-    return Row(
-      children: [
-        Text(
-          "$label: ",
-          style: const TextStyle(
-            fontFamily: 'UncialAntiqua',
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white70,
+    return Container(
+      width: double.infinity,
+      child: Row(
+        children: [
+          Text(
+            "$label: ",
+            style: const TextStyle(
+              fontFamily: 'UncialAntiqua',
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white70,
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        DropdownButton<String>(
-          dropdownColor: const Color(0xFF424242),
-          value: currentValue,
-          items:
-              options
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-          onChanged: onChanged,
-          style: const TextStyle(
-            fontFamily: 'UncialAntiqua',
-            color: Colors.white,
-            fontSize: 16,
+          const SizedBox(width: 8),
+          Expanded(
+            child: DropdownButton<String>(
+              isExpanded: true,
+              dropdownColor: const Color(0xFF424242),
+              value: currentValue,
+              items:
+                  options
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+              onChanged: onChanged,
+              style: const TextStyle(
+                fontFamily: 'UncialAntiqua',
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  // Botão para gerar o encontro
   void _generateEncounter() {
-    // Filtra os monstros de acordo com a dificuldade escolhida
     List<dynamic> filteredMonsters = _filterMonstersByDifficulty();
     int maxMonsters = getMaxMonsters();
     int monsterQty;
     if (_selectedMonsterQty == 'Aleatório') {
-      monsterQty = _random.nextInt(maxMonsters) + 1; // de 1 até maxMonsters
+      monsterQty = _random.nextInt(maxMonsters) + 1;
     } else {
       monsterQty = int.tryParse(_selectedMonsterQty) ?? 1;
     }
-    // Seleciona aleatoriamente os monstros (sem repetição, se possível)
     filteredMonsters.shuffle(_random);
     List<dynamic> selectedMonsters = filteredMonsters.take(monsterQty).toList();
 
-    // Filtra os itens por raridade
     List<dynamic> filteredItems = _filterItemsByRarity();
     int maxItems = getMaxItems();
     int itemQty;
@@ -172,24 +251,21 @@ class _EncounterPageState extends State<EncounterPage> {
     filteredItems.shuffle(_random);
     List<dynamic> selectedItems = filteredItems.take(itemQty).toList();
 
-    // Navega para a página de resultado, passando os dados gerados
-    Navigator.pushNamed(
-      context,
-      '/encontroResultado',
-      arguments: {
-        'monstros': selectedMonsters,
-        'itens': selectedItems,
-        'dificuldade': _selectedEncounterDifficulty,
-        'qtdMonstros': monsterQty,
-        'raridade': _selectedRewardRarity,
-        'qtdItens': itemQty,
-      },
-    );
+    Map<String, dynamic> encounter = {
+      'monstros': selectedMonsters,
+      'itens': selectedItems,
+      'dificuldade': _selectedEncounterDifficulty,
+      'qtdMonstros': monsterQty,
+      'raridade': _selectedRewardRarity,
+      'qtdItens': itemQty,
+    };
+
+    _saveEncounter(encounter);
+    Navigator.pushNamed(context, '/encontroResultado', arguments: encounter);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Define as opções para os dropdowns
     List<String> encounterDifficulties = ['Fácil', 'Médio', 'Difícil'];
     List<String> monsterQtyOptions =
         ['Aleatório'] +
@@ -237,7 +313,6 @@ class _EncounterPageState extends State<EncounterPage> {
                 (value) {
                   setState(() {
                     _selectedEncounterDifficulty = value!;
-                    // Atualiza as opções de quantidade de monstros conforme a dificuldade selecionada
                     monsterQtyOptions =
                         ['Aleatório'] +
                         List.generate(
@@ -266,7 +341,6 @@ class _EncounterPageState extends State<EncounterPage> {
                 (value) {
                   setState(() {
                     _selectedRewardRarity = value!;
-                    // Atualiza as opções de quantidade de itens conforme a raridade
                     itemQtyOptions =
                         ['Aleatório'] +
                         List.generate(getMaxItems(), (index) => '${index + 1}');
@@ -309,6 +383,87 @@ class _EncounterPageState extends State<EncounterPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 24),
+              const Text(
+                'Encontros Salvos:',
+                style: TextStyle(
+                  fontFamily: 'UncialAntiqua',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              _savedEncounters.isEmpty
+                  ? const Text(
+                    'Nenhum encontro salvo.',
+                    style: TextStyle(
+                      fontFamily: 'UncialAntiqua',
+                      fontSize: 16,
+                      color: Colors.white70,
+                    ),
+                  )
+                  : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _savedEncounters.length,
+                    itemBuilder: (context, index) {
+                      final encounter = _savedEncounters[index];
+                      return Dismissible(
+                        key: UniqueKey(),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (direction) async {
+                          return await _showDeleteConfirmation();
+                        },
+                        onDismissed: (direction) {
+                          _deleteEncounter(index);
+                        },
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        child: Card(
+                          color: const Color(0xFF424242).withOpacity(0.9),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/encontroResultado',
+                                arguments: encounter,
+                              );
+                            },
+                            contentPadding: const EdgeInsets.all(16),
+                            title: Text(
+                              'Encontro: ${encounter['dificuldade']} | Monstros: ${encounter['qtdMonstros']}',
+                              style: const TextStyle(
+                                fontFamily: 'UncialAntiqua',
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Recompensa: ${encounter['raridade']} | Itens: ${encounter['qtdItens']}',
+                              style: const TextStyle(
+                                fontFamily: 'UncialAntiqua',
+                                fontSize: 16,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
             ],
           ),
         ),
