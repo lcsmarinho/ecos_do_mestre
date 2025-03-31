@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CampaignsPage extends StatefulWidget {
   const CampaignsPage({Key? key}) : super(key: key);
@@ -19,6 +20,11 @@ class _CampaignsPageState extends State<CampaignsPage> {
     final jsonString = await rootBundle.loadString('assets/campanhas.json');
     final List<dynamic> data = json.decode(jsonString);
     return data;
+  }
+
+  Future<bool> _getCampaignDoneStatus(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool("campaign_done_$id") ?? false;
   }
 
   @override
@@ -47,16 +53,15 @@ class _CampaignsPageState extends State<CampaignsPage> {
     });
   }
 
-  // Função para determinar a cor da dificuldade para o valor
   Color getDifficultyColor(String difficulty) {
     switch (difficulty.toLowerCase()) {
       case 'fácil':
-        return Color(0xFF66BB6A); // Verde claro
+        return const Color(0xFF66BB6A);
       case 'médio':
-        return Color(0xFFFFA000); // Amarelo/laranja
+        return const Color(0xFFFFA000);
       case 'difícil':
       case 'alto':
-        return Color(0xFFEF5350); // Vermelho
+        return const Color(0xFFEF5350);
       default:
         return Colors.white;
     }
@@ -107,15 +112,13 @@ class _CampaignsPageState extends State<CampaignsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Color accentColor = const Color(
-      0xFF1B5E20,
-    ); // Verde usado na estética
+    final Color accentColor = const Color(0xFF1B5E20);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, size: 36),
-          color: accentColor, // Botão de voltar em verde
+          color: accentColor,
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -140,7 +143,6 @@ class _CampaignsPageState extends State<CampaignsPage> {
         ),
         child: Column(
           children: [
-            // Seção de filtros
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -171,7 +173,6 @@ class _CampaignsPageState extends State<CampaignsPage> {
                 ],
               ),
             ),
-            // Lista de campanhas filtradas
             Expanded(
               child:
                   _allCampaigns.isEmpty
@@ -183,72 +184,107 @@ class _CampaignsPageState extends State<CampaignsPage> {
                           final String diff =
                               campaign['dificuldade'].toString();
                           final Color diffColor = getDifficultyColor(diff);
-
-                          return Card(
-                            color: const Color(0xFF424242).withOpacity(0.9),
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: ListTile(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/campanhaDetalhe',
-                                  arguments: campaign,
-                                );
-                              },
-                              contentPadding: const EdgeInsets.all(16),
-                              leading: Image.asset(
-                                campaign['imagem'],
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
-                              title: Text(
-                                campaign['titulo'],
-                                style: TextStyle(
-                                  fontFamily: 'UncialAntiqua',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          return FutureBuilder<bool>(
+                            future: _getCampaignDoneStatus(campaign['id']),
+                            builder: (context, snapshot) {
+                              bool done = snapshot.data ?? false;
+                              return Stack(
                                 children: [
-                                  const SizedBox(height: 4),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: 'Dificuldade: ',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white70,
+                                  Opacity(
+                                    opacity: done ? 0.5 : 1.0,
+                                    child: Card(
+                                      color: const Color(
+                                        0xFF424242,
+                                      ).withOpacity(0.9),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
                                       ),
-                                      children: [
-                                        TextSpan(
-                                          text: diff,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: ListTile(
+                                        onTap: () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            '/campanhaDetalhe',
+                                            arguments: campaign,
+                                          ).then((_) => setState(() {}));
+                                        },
+                                        contentPadding: const EdgeInsets.all(
+                                          16,
+                                        ),
+                                        leading: Image.asset(
+                                          campaign['imagem'],
+                                          width: 80,
+                                          height: 80,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        title: Text(
+                                          campaign['titulo'],
                                           style: TextStyle(
-                                            fontSize: 16,
-                                            color: diffColor,
+                                            fontFamily: 'UncialAntiqua',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
                                           ),
                                         ),
-                                      ],
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 4),
+                                            RichText(
+                                              text: TextSpan(
+                                                text: 'Dificuldade: ',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.white70,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                    text: diff,
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: diffColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Text(
+                                              'Grupo Mínimo: ${campaign['grupoMinimo']} participantes',
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white70,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  Text(
-                                    'Grupo Mínimo: ${campaign['grupoMinimo']} participantes',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white70,
+                                  if (done)
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        color: Colors.black.withOpacity(0.6),
+                                        child: const Text(
+                                          'Feita',
+                                          style: TextStyle(
+                                            fontFamily: 'UncialAntiqua',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
                                 ],
-                              ),
-                            ),
+                              );
+                            },
                           );
                         },
                       ),
