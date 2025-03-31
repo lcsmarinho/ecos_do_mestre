@@ -14,19 +14,28 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Menu lateral (drawer) com fundo em tom bem escuro de verde
+      backgroundColor: backgroundColor,
+      // Drawer (menu lateral) com fundo em gradiente de verde escuro para preto
       drawer: Drawer(
         child: Container(
-          color: primaryColor, // Fundo do menu em verde escuro
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor, Colors.black],
+              stops: [0.0, 0.25],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              // Reduzindo a área do cabeçalho para que fique proporcional aos itens
+              // Cabeçalho do menu com altura reduzida e gradiente similar
               Container(
                 height: 80,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [primaryColor, Colors.black],
+                    stops: [0.0, 0.25],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -36,10 +45,9 @@ class HomeScreen extends StatelessWidget {
                   'Menu',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20, // Tamanho reduzido
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    fontFamily:
-                        'UncialAntiqua', // Fonte temática (adicione no pubspec.yaml)
+                    fontFamily: 'UncialAntiqua',
                   ),
                 ),
               ),
@@ -82,24 +90,36 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      // AppBar com título sempre visível e estilizado; define o iconTheme para customizar o ícone do menu
+      // AppBar com o logo e título usando a fonte dark fantasy
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: accentColor,
-        ), // Ícone do menu em tom de verde
-        title: Text(
-          'Ecos do Mestre',
-          style: TextStyle(
-            fontFamily: 'UncialAntiqua',
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          size: 36, // Ícone do menu aumentado
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Image.asset(
+              'assets/images/ecos-nome.png',
+              height: 40,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Ecos do Mestre',
+              style: TextStyle(
+                fontFamily: 'UncialAntiqua',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         backgroundColor: backgroundColor,
         elevation: 0,
       ),
-      // Corpo com fundo em gradiente escuro e elementos destacados
+      // Corpo com fundo em gradiente escuro
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -118,23 +138,11 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Título principal com fonte temática e sombras para profundidade
-                  Text(
-                    'ECOS DO MESTRE',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'UncialAntiqua',
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 8.0,
-                          color: primaryColor,
-                          offset: Offset(2.0, 2.0),
-                        ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center,
+                  // Exibe o logo em destaque na tela inicial
+                  Image.asset(
+                    'assets/images/ecos-nome.png',
+                    height: 150,
+                    fit: BoxFit.contain,
                   ),
                   SizedBox(height: 24),
                   // Card de boas-vindas com fundo semi-transparente
@@ -156,14 +164,13 @@ class HomeScreen extends StatelessWidget {
                           fontSize: 18,
                           color: Colors.white70,
                           height: 1.5,
-                          fontFamily: 'UncialAntiqua',
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
                   SizedBox(height: 32),
-                  // Botão de call-to-action para explorar campanhas
+                  // Botão de call-to-action para explorar campanhas, com fonte dark fantasy
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/campanhas');
@@ -187,13 +194,6 @@ class HomeScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                  ),
-                  SizedBox(height: 24),
-                  // Ícone ilustrativo para reforçar a identidade visual do RPG
-                  Icon(
-                    Icons.auto_stories,
-                    size: 100,
-                    color: accentColor.withOpacity(0.7),
                   ),
                 ],
               ),
