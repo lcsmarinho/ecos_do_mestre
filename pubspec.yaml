@@ -32,4 +32,5 @@ flutter:
     - assets/images/ecos-logo.png
     - assets/images/ecos-nome.png
     - assets/campanhas.json
+    - assets/monstros.json
   uses-material-design: true

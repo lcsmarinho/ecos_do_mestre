@@ -2,21 +2,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class CampaignsPage extends StatefulWidget {
-  const CampaignsPage({Key? key}) : super(key: key);
+class BestiaryPage extends StatefulWidget {
+  const BestiaryPage({Key? key}) : super(key: key);
 
   @override
-  _CampaignsPageState createState() => _CampaignsPageState();
+  _BestiaryPageState createState() => _BestiaryPageState();
 }
 
-class _CampaignsPageState extends State<CampaignsPage> {
-  List<dynamic> _allCampaigns = [];
-  List<dynamic> _filteredCampaigns = [];
-  String _selectedDifficulty = 'Todos';
-  String _selectedGroupMin = 'Todos';
+class _BestiaryPageState extends State<BestiaryPage> {
+  List<dynamic> _allMonsters = [];
+  List<dynamic> _filteredMonsters = [];
+  String _selectedType = 'Todos';
+  String _selectedND = 'Todos'; // ND: Nível de Desafio
+  String _searchQuery = '';
 
-  Future<List<dynamic>> _loadCampaigns() async {
-    final jsonString = await rootBundle.loadString('assets/campanhas.json');
+  Future<List<dynamic>> _loadMonsters() async {
+    final jsonString = await rootBundle.loadString('assets/monstros.json');
     final List<dynamic> data = json.decode(jsonString);
     return data;
   }
@@ -24,49 +25,37 @@ class _CampaignsPageState extends State<CampaignsPage> {
   @override
   void initState() {
     super.initState();
-    _loadCampaigns().then((campaigns) {
+    _loadMonsters().then((monsters) {
       setState(() {
-        _allCampaigns = campaigns;
-        _filteredCampaigns = campaigns;
+        _allMonsters = monsters;
+        _filteredMonsters = monsters;
       });
     });
   }
 
-  void _filterCampaigns() {
+  void _filterMonsters() {
     setState(() {
-      _filteredCampaigns =
-          _allCampaigns.where((campaign) {
-            bool difficultyMatches =
-                _selectedDifficulty == 'Todos' ||
-                campaign['dificuldade'].toString() == _selectedDifficulty;
-            bool groupMatches =
-                _selectedGroupMin == 'Todos' ||
-                campaign['grupoMinimo'].toString() == _selectedGroupMin;
-            return difficultyMatches && groupMatches;
+      _filteredMonsters =
+          _allMonsters.where((monster) {
+            final String name = monster['nome'].toString().toLowerCase();
+            final String query = _searchQuery.toLowerCase();
+            bool searchMatches = query.isEmpty || name.contains(query);
+            bool typeMatches =
+                _selectedType == 'Todos' ||
+                monster['tipo'].toString() == _selectedType;
+            bool ndMatches =
+                _selectedND == 'Todos' ||
+                monster['nivelDesafio'].toString() == _selectedND;
+            return searchMatches && typeMatches && ndMatches;
           }).toList();
     });
   }
 
-  // Função para determinar a cor da dificuldade para o valor
-  Color getDifficultyColor(String difficulty) {
-    switch (difficulty.toLowerCase()) {
-      case 'fácil':
-        return Color(0xFF66BB6A); // Verde claro
-      case 'médio':
-        return Color(0xFFFFA000); // Amarelo/laranja
-      case 'difícil':
-      case 'alto':
-        return Color(0xFFEF5350); // Vermelho
-      default:
-        return Colors.white;
-    }
-  }
-
   List<String> _getUniqueValues(String key) {
     Set<String> values = {};
-    for (var campaign in _allCampaigns) {
-      if (campaign[key] != null) {
-        values.add(campaign[key].toString());
+    for (var monster in _allMonsters) {
+      if (monster[key] != null) {
+        values.add(monster[key].toString());
       }
     }
     return values.toList();
@@ -105,6 +94,29 @@ class _CampaignsPageState extends State<CampaignsPage> {
     );
   }
 
+  Widget _buildSearchField() {
+    return TextField(
+      onChanged: (value) {
+        setState(() {
+          _searchQuery = value;
+          _filterMonsters();
+        });
+      },
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: 'Buscar por nome...',
+        hintStyle: const TextStyle(color: Colors.white54),
+        prefixIcon: const Icon(Icons.search, color: Colors.white70),
+        filled: true,
+        fillColor: const Color(0xFF424242),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Color accentColor = const Color(
@@ -115,11 +127,11 @@ class _CampaignsPageState extends State<CampaignsPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, size: 36),
-          color: accentColor, // Botão de voltar em verde
+          color: accentColor,
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Campanhas',
+          'Bestiário',
           style: TextStyle(
             fontFamily: 'UncialAntiqua',
             fontSize: 24,
@@ -140,52 +152,53 @@ class _CampaignsPageState extends State<CampaignsPage> {
         ),
         child: Column(
           children: [
-            // Seção de filtros
+            // Campo de busca
             Padding(
               padding: const EdgeInsets.all(16.0),
+              child: _buildSearchField(),
+            ),
+            // Seção de filtros
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: [
                   _buildDropdown(
-                    'Dificuldade:',
-                    _selectedDifficulty,
-                    _getUniqueValues('dificuldade'),
+                    'Tipo:',
+                    _selectedType,
+                    _getUniqueValues('tipo'),
                     (value) {
                       setState(() {
-                        _selectedDifficulty = value!;
-                        _filterCampaigns();
+                        _selectedType = value!;
+                        _filterMonsters();
                       });
                     },
                   ),
                   const SizedBox(height: 8),
                   _buildDropdown(
-                    'Grupo Mínimo:',
-                    _selectedGroupMin,
-                    _getUniqueValues('grupoMinimo'),
+                    'ND:',
+                    _selectedND,
+                    _getUniqueValues('nivelDesafio'),
                     (value) {
                       setState(() {
-                        _selectedGroupMin = value!;
-                        _filterCampaigns();
+                        _selectedND = value!;
+                        _filterMonsters();
                       });
                     },
                   ),
                 ],
               ),
             ),
-            // Lista de campanhas filtradas
+            // Lista de monstros filtrados
             Expanded(
               child:
-                  _allCampaigns.isEmpty
+                  _allMonsters.isEmpty
                       ? const Center(child: CircularProgressIndicator())
                       : ListView.builder(
-                        itemCount: _filteredCampaigns.length,
+                        itemCount: _filteredMonsters.length,
                         itemBuilder: (context, index) {
-                          final campaign = _filteredCampaigns[index];
-                          final String diff =
-                              campaign['dificuldade'].toString();
-                          final Color diffColor = getDifficultyColor(diff);
-
+                          final monster = _filteredMonsters[index];
                           return Card(
-                            color: const Color(0xFF424242).withOpacity(0.9),
+                            color: const Color(0xFF424242),
                             margin: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 8,
@@ -197,19 +210,19 @@ class _CampaignsPageState extends State<CampaignsPage> {
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
-                                  '/campanhaDetalhe',
-                                  arguments: campaign,
+                                  '/bestiaryDetalhe',
+                                  arguments: monster,
                                 );
                               },
                               contentPadding: const EdgeInsets.all(16),
                               leading: Image.asset(
-                                campaign['imagem'],
+                                monster['foto'],
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,
                               ),
                               title: Text(
-                                campaign['titulo'],
+                                monster['nome'],
                                 style: TextStyle(
                                   fontFamily: 'UncialAntiqua',
                                   fontSize: 20,
@@ -221,26 +234,15 @@ class _CampaignsPageState extends State<CampaignsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 4),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: 'Dificuldade: ',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white70,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: diff,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: diffColor,
-                                          ),
-                                        ),
-                                      ],
+                                  Text(
+                                    monster['tipo'],
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white70,
                                     ),
                                   ),
                                   Text(
-                                    'Grupo Mínimo: ${campaign['grupoMinimo']} participantes',
+                                    'ND: ${monster['nivelDesafio']}',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.white70,
