@@ -6,6 +6,7 @@ import 'pages/bestiary_page.dart';
 import 'pages/bestiary_detail_page.dart';
 import 'pages/itens_page.dart';
 import 'pages/itens_detail_page.dart';
+import 'pages/dice_page.dart';
 
 void main() {
   runApp(const EcosDoMestreApp());
@@ -31,6 +32,7 @@ class EcosDoMestreApp extends StatelessWidget {
         '/bestiaryDetalhe': (context) => const BestiaryDetailPage(),
         '/itens': (context) => const ItensPage(),
         '/itensDetalhe': (context) => const ItensDetailPage(),
+        '/dados': (context) => const DicePage(),
       },
     );
   }

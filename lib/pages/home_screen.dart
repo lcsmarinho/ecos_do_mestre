@@ -99,6 +99,24 @@ class HomeScreen extends StatelessWidget {
                   Navigator.pushNamed(context, '/itens');
                 },
               ),
+              const Divider(color: Colors.white24),
+              // Novo item: Dados
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.casino, color: Colors.white),
+                title: const Text(
+                  'Dados',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/dados');
+                },
+              ),
             ],
           ),
         ),
