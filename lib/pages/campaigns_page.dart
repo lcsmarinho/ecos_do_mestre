@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CampaignsPage extends StatefulWidget {
   const CampaignsPage({Key? key}) : super(key: key);
@@ -10,13 +11,125 @@ class CampaignsPage extends StatefulWidget {
 }
 
 class _CampaignsPageState extends State<CampaignsPage> {
+  bool _dontShowGuide = false;
+
   Future<List<dynamic>> _loadCampaigns() async {
     final jsonString = await rootBundle.loadString('assets/campanhas.json');
     final List<dynamic> data = json.decode(jsonString);
     return data;
   }
 
-  // Função para determinar a cor da dificuldade
+  @override
+  void initState() {
+    super.initState();
+    _checkDontShowGuide();
+  }
+
+  void _checkDontShowGuide() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool dontShow = prefs.getBool('dontShowGuide') ?? false;
+    setState(() {
+      _dontShowGuide = dontShow;
+    });
+    if (!_dontShowGuide) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showGuideDialog();
+      });
+    }
+  }
+
+  void _showGuideDialog() {
+    bool dontShowAgain = false;
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Obriga o usuário a interagir
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              // Adiciona um contorno e sombra suave em tom de verde
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: Color(0xFF4CAF50), width: 2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              backgroundColor: Colors.grey[900],
+              title: Text(
+                'Guia do Mestre',
+                style: TextStyle(
+                  color: Color(0xFF4CAF50),
+                  fontFamily: 'UncialAntiqua',
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Saudações, nobre mestre! Este app é o seu grimório de inspiração – um ponto de partida para forjar aventuras épicas. As campanhas aqui apresentadas oferecem uma problemática e alguns detalhes para enriquecer suas narrativas, mas a verdadeira magia está na sua imaginação. Use estas informações como base e construa a aventura que desejar!',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Checkbox(
+                          activeColor: Color(0xFF4CAF50),
+                          value: dontShowAgain,
+                          onChanged: (value) {
+                            setStateDialog(() {
+                              dontShowAgain = value ?? false;
+                            });
+                          },
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Estou ciente. Não exibir esta mensagem novamente.',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    if (dontShowAgain) {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('dontShowGuide', true);
+                      setState(() {
+                        _dontShowGuide = true;
+                      });
+                    }
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                      color: Color(0xFF4CAF50),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Função para determinar a cor da dificuldade (apenas o valor será colorido)
   Color getDifficultyColor(String difficulty) {
     switch (difficulty.toLowerCase()) {
       case 'fácil':
