@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
-  // Definindo as cores utilizadas na tela
   final Color primaryColor = const Color(0xFF0D3B26); // Verde Lovecraft escuro
   final Color accentColor = const Color(0xFF1B5E20); // Verde de destaque
   final Color backgroundColor = const Color(0xFF121212); // Fundo da aplicação
@@ -12,7 +11,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      // Menu lateral (Drawer)
       drawer: Drawer(
         child: Container(
           decoration: BoxDecoration(
@@ -41,92 +39,73 @@ class HomeScreen extends StatelessWidget {
                 child: Text(
                   'Menu',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
                     fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              // Item para Campanhas
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C2C2C),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: accentColor,
-                        blurRadius: 4,
-                        offset: const Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.book, color: Colors.white),
-                    title: Text(
-                      'Campanhas',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'UncialAntiqua',
-                        fontSize: 18,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/campanhas');
-                    },
+              // Item: Campanhas
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.book, color: Colors.white),
+                title: const Text(
+                  'Campanhas',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/campanhas');
+                },
               ),
-              // Item para Bestiário
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C2C2C),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: accentColor,
-                        blurRadius: 4,
-                        offset: const Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.pets, color: Colors.white),
-                    title: Text(
-                      'Bestiário',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'UncialAntiqua',
-                        fontSize: 18,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/bestiary');
-                    },
+              const Divider(color: Colors.white24),
+              // Item: Bestiário
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.pets, color: Colors.white),
+                title: const Text(
+                  'Bestiário',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/bestiary');
+                },
+              ),
+              const Divider(color: Colors.white24),
+              // Item: Itens
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.inventory, color: Colors.white),
+                title: const Text(
+                  'Itens',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/itens');
+                },
               ),
             ],
           ),
         ),
       ),
-      // AppBar com o logo e o título
       appBar: AppBar(
         iconTheme: IconThemeData(color: accentColor, size: 36),
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Image.asset(
               'assets/images/ecos-nome.png',
@@ -148,11 +127,10 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: backgroundColor,
         elevation: 0,
       ),
-      // Corpo da tela
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [backgroundColor, Colors.black],
+            colors: [Color(0xFF121212), Colors.black],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -161,16 +139,13 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           child: Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Logo central
                 Image.asset(
                   'assets/images/ecos-nome.png',
                   height: 150,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 24),
-                // Card de boas-vindas
                 Card(
                   elevation: 8,
                   shape: RoundedRectangleBorder(
@@ -185,13 +160,15 @@ class HomeScreen extends StatelessWidget {
                       'Este app é a ferramenta perfeita para mestres planejarem suas aventuras, '
                       'gerenciar NPCs e controlar todos os detalhes do seu universo. '
                       'Fique atento, pois em breve teremos um aplicativo especial para jogadores.',
-                      style: TextStyle(fontSize: 18, color: Colors.white70),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.white70,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
                 ),
                 const SizedBox(height: 32),
-                // Botão para explorar campanhas
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/campanhas');
@@ -209,9 +186,9 @@ class HomeScreen extends StatelessWidget {
                   child: Text(
                     'Explorar Campanhas',
                     style: TextStyle(
+                      fontFamily: 'UncialAntiqua',
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'UncialAntiqua',
                       color: Colors.white,
                     ),
                   ),

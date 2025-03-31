@@ -4,24 +4,33 @@ import 'pages/campaigns_page.dart';
 import 'pages/campaign_detail_page.dart';
 import 'pages/bestiary_page.dart';
 import 'pages/bestiary_detail_page.dart';
+import 'pages/itens_page.dart';
+import 'pages/itens_detail_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const EcosDoMestreApp());
 }
 
-class MyApp extends StatelessWidget {
+class EcosDoMestreApp extends StatelessWidget {
+  const EcosDoMestreApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Ecos do Mestre',
-      theme: ThemeData(primaryColor: Color(0xFF121212)),
+      theme: ThemeData(
+        primaryColor: const Color(0xFF121212),
+        scaffoldBackgroundColor: const Color(0xFF121212),
+      ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomeScreen(),
-        '/campanhas': (context) => CampaignsPage(),
-        '/campanhaDetalhe': (context) => CampaignDetailPage(),
-        '/bestiary': (context) => BestiaryPage(),
-        '/bestiaryDetalhe': (context) => BestiaryDetailPage(),
+        '/': (context) => const HomeScreen(),
+        '/campanhas': (context) => const CampaignsPage(),
+        '/campanhaDetalhe': (context) => const CampaignDetailPage(),
+        '/bestiary': (context) => const BestiaryPage(),
+        '/bestiaryDetalhe': (context) => const BestiaryDetailPage(),
+        '/itens': (context) => const ItensPage(),
+        '/itensDetalhe': (context) => const ItensDetailPage(),
       },
     );
   }
