@@ -1,0 +1,62 @@
+[
+    {
+      "id": "campanha1",
+      "titulo": "A Floresta Sombria",
+      "imagem": "assets/images/ecos-nome.png",
+      "dificuldade": "Médio",
+      "grupoMinimo": 3,
+      "corpo": "Uma aventura misteriosa na floresta onde sombras ganham vida.",
+      "monstros": ["Lobisomem", "Worg"],
+      "chefoes": ["Aranha Gigante"],
+      "recompensas": ["Espada Encantada", "Poção de Cura"],
+      "npcs": ["Velho Sábio", "Caçador"]
+    },
+    {
+      "id": "campanha2",
+      "titulo": "O Castelo Abandonado",
+      "imagem": "assets/images/ecos-nome.png",
+      "dificuldade": "Difícil",
+      "grupoMinimo": 4,
+      "corpo": "Explore um castelo antigo repleto de segredos e perigos.",
+      "monstros": ["Zumbi", "Espectro"],
+      "chefoes": ["Lorde Fantasma"],
+      "recompensas": ["Armadura Mística", "Anel da Invisibilidade"],
+      "npcs": ["Gentil Fantasma", "Bibliotecário Espectral"]
+    },
+    {
+      "id": "campanha3",
+      "titulo": "As Ruínas Submersas",
+      "imagem": "assets/images/ecos-nome.png",
+      "dificuldade": "Alto",
+      "grupoMinimo": 5,
+      "corpo": "Descubra os mistérios das ruínas esquecidas no fundo do mar.",
+      "monstros": ["Sereia", "Kraken"],
+      "chefoes": ["Rei das Profundezas"],
+      "recompensas": ["Tridente Sagrado", "Colar de Pérolas"],
+      "npcs": ["Navegador", "Mago Marinho"]
+    },
+    {
+      "id": "campanha4",
+      "titulo": "A Fortaleza Congelada",
+      "imagem": "assets/images/ecos-nome.png",
+      "dificuldade": "Fácil",
+      "grupoMinimo": 2,
+      "corpo": "Uma fortaleza de gelo com segredos milenares e inimigos congelados.",
+      "monstros": ["Yeti", "Lobisomem de Gelo"],
+      "chefoes": ["Guerreiro de Gelo"],
+      "recompensas": ["Machado de Gelo", "Capa de Pelos"],
+      "npcs": ["Ancião da Neve", "Caçador do Norte"]
+    },
+    {
+      "id": "campanha5",
+      "titulo": "O Mercado das Almas",
+      "imagem": "assets/images/ecos-nome.png",
+      "dificuldade": "Médio",
+      "grupoMinimo": 3,
+      "corpo": "Um mercado místico onde almas e segredos são negociados.",
+      "monstros": ["Sombras Errantes", "Espectros"],
+      "chefoes": ["Mercador de Almas"],
+      "recompensas": ["Amuleto das Sombras", "Pergaminho Antigo"],
+      "npcs": ["Místico Errante", "Guardião dos Segredos"]
+    }
+  ]
