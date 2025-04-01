@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final Color primaryColor = const Color(0xFF0D3B26); // Verde Lovecraft escuro
   final Color accentColor = const Color(0xFF1B5E20); // Verde de destaque
@@ -10,6 +17,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: backgroundColor,
       drawer: Drawer(
         child: Container(
@@ -100,7 +108,7 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Novo item: Dados
+              // Item: Dados
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.casino, color: Colors.white),
@@ -118,7 +126,7 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Novo item: Encontros
+              // Item: Encontros
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.flash_on, color: Colors.white),
@@ -135,12 +143,52 @@ class HomeScreen extends StatelessWidget {
                   Navigator.pushNamed(context, '/encontro');
                 },
               ),
+              const Divider(color: Colors.white24),
+              // Item: Magias
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.auto_stories, color: Colors.white),
+                title: const Text(
+                  'Magias',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/magias');
+                },
+              ),
+              const Divider(color: Colors.white24),
+              // Item: Sobre
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.info_outline, color: Colors.white),
+                title: const Text(
+                  'Sobre',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/sobre');
+                },
+              ),
             ],
           ),
         ),
       ),
       appBar: AppBar(
-        iconTheme: IconThemeData(color: accentColor, size: 36),
+        leading: IconButton(
+          icon: const Icon(Icons.menu, size: 36),
+          color: accentColor,
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        ),
         title: Row(
           children: [
             Image.asset(
@@ -163,75 +211,101 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: backgroundColor,
         elevation: 0,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF121212), Colors.black],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-          child: Center(
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/images/ecos-nome.png',
-                  height: 150,
-                  fit: BoxFit.contain,
-                ),
-                const SizedBox(height: 24),
-                Card(
-                  elevation: 8,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  color: const Color(0xFF424242).withOpacity(0.9),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      'Bem-vindo ao Ecos do Mestre!\n\n'
-                      'Organize suas campanhas de RPG de forma prática e criativa. '
-                      'Este app é a ferramenta perfeita para mestres planejarem suas aventuras, '
-                      'gerenciar NPCs e controlar todos os detalhes do seu universo. '
-                      'Fique atento, pois em breve teremos um aplicativo especial para jogadores.',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.white70,
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.velocity.pixelsPerSecond.dx > 200) {
+            _scaffoldKey.currentState?.openDrawer();
+          }
+        },
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/images/ecos-nome.png',
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Bem-vindo ao Ecos do Mestre!',
+                      style: TextStyle(
+                        fontFamily: 'UncialAntiqua',
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        shadows: const [
+                          Shadow(
+                            color: Color(0xFF1B5E20),
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
                       ),
                       textAlign: TextAlign.center,
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Use este app para criar, organizar e gerenciar suas campanhas de D&D 5e com estilo. Monte encontros, gerencie bestiários, itens e dados – tudo para transformar suas sessões em aventuras épicas. Em breve, versão exclusiva para jogadores!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/campanhas');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        'Explorar Campanhas',
+                        style: TextStyle(
+                          fontFamily: 'UncialAntiqua',
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 80),
+                  ],
                 ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/campanhas');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: accentColor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text(
-                    'Explorar Campanhas',
-                    style: TextStyle(
-                      fontFamily: 'UncialAntiqua',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  'Se por acaso o app quebrar, baixe ele novamente*',
+                  style: const TextStyle(
+                    fontSize: 8,
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

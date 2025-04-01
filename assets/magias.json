@@ -1,0 +1,103 @@
+[
+    {
+      "nome": "Míssil Mágico",
+      "classe": "Mago, Feiticeiro",
+      "tipo": "1º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "120 pés",
+      "componentes": "V, S",
+      "duracao": "Instantânea",
+      "descricao": "Cria três mísseis mágicos que automaticamente atingem alvos de sua escolha, causando 1d4+1 de dano cada. O número de mísseis aumenta conforme o nível do feitiço."
+    },
+    {
+      "nome": "Bola de Fogo",
+      "classe": "Mago, Feiticeiro",
+      "tipo": "3º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "150 pés",
+      "componentes": "V, S, M (uma pequena bola de papel queimado)",
+      "duracao": "Instantânea",
+      "descricao": "Uma explosão de chamas irrompe em um raio de 20 pés, causando 8d6 de dano de fogo aos alvos dentro da área, com teste de Destreza para metade do dano."
+    },
+    {
+      "nome": "Escudo",
+      "classe": "Mago, Feiticeiro",
+      "tipo": "1º Nível",
+      "tempoConjuracao": "1 reação (quando você é atingido por um ataque)",
+      "alcance": "Você",
+      "componentes": "V, S",
+      "duracao": "1 rodada",
+      "descricao": "Concede um bônus de +5 à sua CA até o início do seu próximo turno, bloqueando o ataque que o acionou."
+    },
+    {
+      "nome": "Luz",
+      "classe": "Bardo, Clérigo, Druida, Mago, Feiticeiro",
+      "tipo": "Cantrip",
+      "tempoConjuracao": "1 ação",
+      "alcance": "Toque",
+      "componentes": "V, M (uma pequena lanterna ou pedaço de cera)",
+      "duracao": "1 hora",
+      "descricao": "Faz com que um objeto toque se transforme em uma fonte de luz, emitindo luz brilhante em um raio de 20 pés e luz fraca por 20 pés adicionais."
+    },
+    {
+      "nome": "Detectar Magia",
+      "classe": "Mago, Feiticeiro, Clérigo, Druida, Paladino, Ranger",
+      "tipo": "1º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "Self (60 pés)",
+      "componentes": "V, S",
+      "duracao": "Concentração, até 10 minutos",
+      "descricao": "Permite que você sinta a presença de magia em um raio de 30 pés ao redor de você enquanto mantiver a concentração."
+    },
+    {
+      "nome": "Cura Ferimentos",
+      "classe": "Clérigo, Druida, Bardo, Paladino, Ranger",
+      "tipo": "1º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "Toque",
+      "componentes": "V, S",
+      "duracao": "Instantânea",
+      "descricao": "Um toque curativo restaura 1d8 + seu modificador de Sabedoria em pontos de vida. Ao ser lançado em um nível superior, a cura aumenta em 1d8 para cada nível acima do 1º."
+    },
+    {
+      "nome": "Invisibilidade",
+      "classe": "Mago, Feiticeiro, Ladino (habilidade especial)",
+      "tipo": "2º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "Toque",
+      "componentes": "V, S, M (um pó fino de camaleão)",
+      "duracao": "Concentração, até 1 hora",
+      "descricao": "Torna uma criatura ou objeto invisível até que o feitiço termine. Se o alvo atacar ou conjurar outro feitiço, o feitiço termina."
+    },
+    {
+      "nome": "Sussurros Dissonantes",
+      "classe": "Bardo, Feiticeiro",
+      "tipo": "1º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "60 pés",
+      "componentes": "V",
+      "duracao": "Instantânea",
+      "descricao": "Faz com que uma criatura ou grupo de criaturas ouça sussurros perturbadores; a criatura deve fazer um teste de Sabedoria ou ficar aterrorizada e sofrer dano psíquico."
+    },
+    {
+      "nome": "Levitação",
+      "classe": "Mago, Feiticeiro, Bruxo",
+      "tipo": "2º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "60 pés",
+      "componentes": "V, S, M (um fio de seda)",
+      "duracao": "Concentração, até 10 minutos",
+      "descricao": "Você faz uma criatura ou objeto levitar, elevando-o a até 20 pés do chão. Se for uma criatura, ela pode fazer um teste de Força para resistir."
+    },
+    {
+      "nome": "Teletransporte",
+      "classe": "Mago, Feiticeiro",
+      "tipo": "7º Nível",
+      "tempoConjuracao": "1 ação",
+      "alcance": "10 pés",
+      "componentes": "V",
+      "duracao": "Instantânea",
+      "descricao": "Você se teletransporta instantaneamente para um local que você conhece bem, ou para um destino aleatório em uma área determinada. Se usado para grupos, todos os envolvidos se movem juntos."
+    }
+  ]
+  
