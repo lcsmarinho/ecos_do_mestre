@@ -18,7 +18,7 @@ void main() {
 }
 
 class EcosDoMestreApp extends StatelessWidget {
-  const EcosDoMestreApp({Key? key}) : super(key: key);
+  const EcosDoMestreApp({super.key});
 
   @override
   Widget build(BuildContext context) {

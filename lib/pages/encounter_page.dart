@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EncounterPage extends StatefulWidget {
-  const EncounterPage({Key? key}) : super(key: key);
+  const EncounterPage({super.key});
 
   @override
   _EncounterPageState createState() => _EncounterPageState();
@@ -192,7 +192,7 @@ class _EncounterPageState extends State<EncounterPage> {
     List<String> options,
     ValueChanged<String?> onChanged,
   ) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Row(
         children: [

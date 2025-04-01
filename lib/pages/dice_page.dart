@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class DicePage extends StatefulWidget {
-  const DicePage({Key? key}) : super(key: key);
+  const DicePage({super.key});
 
   @override
   _DicePageState createState() => _DicePageState();

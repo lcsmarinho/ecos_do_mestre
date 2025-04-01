@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class MagiasPage extends StatefulWidget {
-  const MagiasPage({Key? key}) : super(key: key);
+  const MagiasPage({super.key});
 
   @override
   _MagiasPageState createState() => _MagiasPageState();

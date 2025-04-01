@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class BestiaryDetailPage extends StatelessWidget {
-  const BestiaryDetailPage({Key? key}) : super(key: key);
+  const BestiaryDetailPage({super.key});
 
   // Função auxiliar para formatar ataques e ações com sombra verde no nome e dano em vermelho
   Widget buildFormattedText(String text) {
     // Divide o texto em duas partes pelo primeiro ":"
     final parts = text.split(':');
     if (parts.length > 1) {
-      final attackName = parts[0] + ":";
+      final attackName = "${parts[0]}:";
       final attackDetail = parts.sublist(1).join(':').trim();
 
       // Procura pela palavra "dano:" (case-insensitive) no detalhe
@@ -22,7 +22,7 @@ class BestiaryDetailPage extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: attackName + " ",
+                text: "$attackName ",
                 style: TextStyle(
                   fontFamily: 'UncialAntiqua',
                   fontSize: 18,
@@ -38,7 +38,7 @@ class BestiaryDetailPage extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: description + " ",
+                text: "$description ",
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -61,7 +61,7 @@ class BestiaryDetailPage extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: attackName + " ",
+                text: "$attackName ",
                 style: TextStyle(
                   fontFamily: 'UncialAntiqua',
                   fontSize: 18,

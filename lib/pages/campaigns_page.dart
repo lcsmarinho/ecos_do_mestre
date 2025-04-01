@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CampaignsPage extends StatefulWidget {
-  const CampaignsPage({Key? key}) : super(key: key);
+  const CampaignsPage({super.key});
 
   @override
   _CampaignsPageState createState() => _CampaignsPageState();

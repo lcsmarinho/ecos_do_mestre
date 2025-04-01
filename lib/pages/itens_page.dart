@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ItensPage extends StatefulWidget {
-  const ItensPage({Key? key}) : super(key: key);
+  const ItensPage({super.key});
 
   @override
   _ItensPageState createState() => _ItensPageState();

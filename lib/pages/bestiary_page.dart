@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class BestiaryPage extends StatefulWidget {
-  const BestiaryPage({Key? key}) : super(key: key);
+  const BestiaryPage({super.key});
 
   @override
   _BestiaryPageState createState() => _BestiaryPageState();

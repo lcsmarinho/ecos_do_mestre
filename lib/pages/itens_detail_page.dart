@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ItensDetailPage extends StatelessWidget {
-  const ItensDetailPage({Key? key}) : super(key: key);
+  const ItensDetailPage({super.key});
 
   // Função para determinar a cor da raridade
   Color getRarityColor(String rarity) {

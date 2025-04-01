@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CampaignDetailPage extends StatefulWidget {
-  const CampaignDetailPage({Key? key}) : super(key: key);
+  const CampaignDetailPage({super.key});
 
   @override
   _CampaignDetailPageState createState() => _CampaignDetailPageState();

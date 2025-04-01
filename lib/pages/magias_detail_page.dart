@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MagiasDetailPage extends StatelessWidget {
-  const MagiasDetailPage({Key? key}) : super(key: key);
+  const MagiasDetailPage({super.key});
 
   // Widget para título formatado com sombra verde
   Widget buildFormattedTitle(String text, {double fontSize = 24}) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class EncounterResultPage extends StatelessWidget {
-  const EncounterResultPage({Key? key}) : super(key: key);
+  const EncounterResultPage({super.key});
 
   // Função genérica para criar cabeçalhos formatados
   Widget buildHeader(
