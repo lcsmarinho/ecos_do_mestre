@@ -21,7 +21,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/ecos-nome.png"
+  image_path: "assets/images/ecos-nome-background.png"
 
 flutter:
   fonts:
@@ -34,4 +34,5 @@ flutter:
     - assets/campanhas.json
     - assets/monstros.json
     - assets/itens.json
+    - assets/images/ecos-nome-background.png
   uses-material-design: true
