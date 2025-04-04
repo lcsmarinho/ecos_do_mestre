@@ -82,46 +82,118 @@ class _MinhasAventurasPageState extends State<MinhasAventurasPage> {
         backgroundColor: backgroundColor,
         elevation: 0,
       ),
-      body: ListView.builder(
-        itemCount: _aventuras.length,
-        itemBuilder: (context, index) {
-          final aventura = _aventuras[index];
-          return Dismissible(
-            key: UniqueKey(),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) {
-              _deleteAventura(index);
-            },
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
-              child: const Icon(Icons.delete, color: Colors.white),
-            ),
-            child: ListTile(
-              title: Text(
-                aventura['nome'] ?? 'Sem Nome',
-                style: const TextStyle(
-                  fontFamily: 'UncialAntiqua',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      body:
+          _aventuras.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Nenhuma aventura encontrada.',
+                      style: TextStyle(
+                        fontFamily: 'UncialAntiqua',
+                        fontSize: 18,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        _navigateToAventuraDetail();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        'Criar Aventura',
+                        style: TextStyle(
+                          fontFamily: 'UncialAntiqua',
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+              )
+              : ListView.builder(
+                itemCount: _aventuras.length,
+                itemBuilder: (context, index) {
+                  final aventura = _aventuras[index];
+                  return Dismissible(
+                    key: UniqueKey(),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      _deleteAventura(index);
+                    },
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        aventura['nome'] ?? 'Sem Nome',
+                        style: const TextStyle(
+                          fontFamily: 'UncialAntiqua',
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onTap: () {
+                        _navigateToAventuraDetail(aventura: aventura);
+                      },
+                    ),
+                  );
+                },
               ),
-              onTap: () {
-                _navigateToAventuraDetail(aventura: aventura);
-              },
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: accentColor,
-        child: const Icon(Icons.add),
-        onPressed: () {
-          _navigateToAventuraDetail();
-        },
-      ),
+      // Botão removido do floatingActionButton, pois agora o botão "Criar Aventura"
+      // está centralizado no corpo (para casos com lista vazia) ou pode ser adicionado
+      // também em um bottomNavigationBar, se desejar.
+      bottomNavigationBar:
+          _aventuras.isNotEmpty
+              ? Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 32,
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _navigateToAventuraDetail();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accentColor,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text(
+                    'Criar Aventura',
+                    style: TextStyle(
+                      fontFamily: 'UncialAntiqua',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+              : null,
+      backgroundColor: backgroundColor,
     );
   }
 }

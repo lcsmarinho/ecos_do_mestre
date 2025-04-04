@@ -14,6 +14,7 @@ import 'pages/magias_detail_page.dart';
 import 'pages/about_page.dart';
 import 'pages/minhas_aventuras_page.dart';
 import 'pages/aventura_detail_page.dart';
+import 'pages/anotacoes_page.dart';
 
 void main() {
   runApp(const EcosDoMestreApp());
@@ -45,8 +46,19 @@ class EcosDoMestreApp extends StatelessWidget {
         '/magias': (context) => const MagiasPage(),
         '/magiasDetalhe': (context) => const MagiasDetailPage(),
         '/sobre': (context) => const AboutPage(),
-        '/aventuraDetalhe': (context) => const AventuraDetailPage(),
+        '/aventuraDetalhe': (context) {
+          final args =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>?;
+          if (args != null && args.containsKey('id')) {
+            return AventuraDetailPage(adventureId: args['id']);
+          }
+          return AventuraDetailPage(
+            adventureId: DateTime.now().millisecondsSinceEpoch.toString(),
+          );
+        },
         '/minhasAventuras': (context) => const MinhasAventurasPage(),
+        '/anotacoes': (context) => const AnotacoesPage(),
       },
     );
   }

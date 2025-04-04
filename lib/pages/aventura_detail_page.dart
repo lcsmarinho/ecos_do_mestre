@@ -1,11 +1,14 @@
-import 'dart:math';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ecos_do_mestre/pages/campaign_selection_dialog.dart';
 import 'package:ecos_do_mestre/pages/monster_selection_dialog.dart';
 import 'package:ecos_do_mestre/pages/item_selection_dialog.dart';
 
 class AventuraDetailPage extends StatefulWidget {
-  const AventuraDetailPage({Key? key}) : super(key: key);
+  // Recebe o id da aventura para associar as anotações
+  final String adventureId;
+  const AventuraDetailPage({Key? key, required this.adventureId})
+    : super(key: key);
 
   @override
   _AventuraDetailPageState createState() => _AventuraDetailPageState();
@@ -27,6 +30,8 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // Se necessário, já atribua o nome da aventura a partir do adventureId
+    // ou carregue outros dados.
   }
 
   @override
@@ -37,7 +42,6 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
       if (adventure != null) {
         _nomeController.text = adventure['nome'] ?? '';
-        // Garante que cada campanha importada tenha um campo 'done'
         _campanhas =
             (adventure['campanhas'] as List<dynamic>? ?? []).map((e) {
               Map<String, dynamic> item = Map<String, dynamic>.from(e);
@@ -66,7 +70,7 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
 
   void _saveAdventure() {
     Map<String, dynamic> adventure = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'id': widget.adventureId,
       'nome': _nomeController.text,
       'campanhas': _campanhas,
       'monstros': _monstros,
@@ -75,9 +79,40 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
     Navigator.pop(context, adventure);
   }
 
-  // Função que constrói uma ListTile para campanhas importadas
+  // Widget auxiliar para detectar long press de 1.5s
+  Widget _withLongPress({
+    required Widget child,
+    required VoidCallback normalAction,
+    required VoidCallback longPressAction,
+  }) {
+    Timer? timer;
+    bool longPressTriggered = false;
+
+    return GestureDetector(
+      onTapDown: (_) {
+        longPressTriggered = false;
+        timer = Timer(const Duration(milliseconds: 1500), () {
+          longPressTriggered = true;
+          longPressAction();
+        });
+      },
+      onTapUp: (_) {
+        if (timer != null && timer!.isActive) {
+          timer!.cancel();
+          if (!longPressTriggered) {
+            normalAction();
+          }
+        }
+      },
+      onTapCancel: () {
+        timer?.cancel();
+      },
+      child: child,
+    );
+  }
+
+  // Função que constrói uma ListTile para campanhas importadas com long press customizado
   Widget _buildCampaignTile(Map<String, dynamic> campaign, int index) {
-    bool done = campaign['done'] ?? false;
     return Dismissible(
       key: UniqueKey(),
       direction: DismissDirection.endToStart,
@@ -92,54 +127,51 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
         padding: const EdgeInsets.only(right: 20),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      child: ListTile(
-        title: Text(
-          campaign['titulo'] ?? 'Sem Nome',
-          style: TextStyle(
-            fontFamily: 'UncialAntiqua',
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            decoration: done ? TextDecoration.lineThrough : null,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Dificuldade: ${campaign['dificuldade'] ?? 'N/A'}',
-              style: const TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-            Text(
-              'Grupo Mínimo: ${campaign['grupoMinimo'] ?? 'N/A'} participantes',
-              style: const TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-          ],
-        ),
-        trailing: IconButton(
-          icon: Icon(
-            done ? Icons.check_circle : Icons.check_circle_outline,
-            color: done ? const Color(0xFF1B5E20) : Colors.white70,
-          ),
-          onPressed: () {
-            setState(() {
-              campaign['done'] = !done;
-            });
-          },
-        ),
-        onTap: () {
-          // Ao tocar no tile, alterna o status "done"
+      child: _withLongPress(
+        normalAction: () {
           setState(() {
-            campaign['done'] = !done;
+            campaign['done'] = !campaign['done'];
           });
         },
+        longPressAction: () {
+          Navigator.pushNamed(context, '/campanhaDetalhe', arguments: campaign);
+        },
+        child: ListTile(
+          title: Text(
+            campaign['titulo'] ?? 'Sem Nome',
+            style: TextStyle(
+              fontFamily: 'UncialAntiqua',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              decoration:
+                  (campaign['done'] ?? false)
+                      ? TextDecoration.lineThrough
+                      : null,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Dificuldade: ${campaign['dificuldade'] ?? 'N/A'}',
+                style: const TextStyle(fontSize: 14, color: Colors.white70),
+              ),
+              Text(
+                'Grupo Mínimo: ${campaign['grupoMinimo'] ?? 'N/A'} participantes',
+                style: const TextStyle(fontSize: 14, color: Colors.white70),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  // Função que constrói uma ListTile para monstros e itens importados (somente exclusão)
+  // Função que constrói uma ListTile para monstros e itens importados com long press customizado
   Widget _buildGenericTile(Map<String, dynamic> item, int index, String type) {
-    // type pode ser 'monstro' ou 'item'
+    // Para monstros e itens, o toque curto já navega para o detail page;
+    // o toque longo fará a mesma ação.
     return Dismissible(
       key: UniqueKey(),
       direction: DismissDirection.endToStart,
@@ -158,31 +190,33 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
         padding: const EdgeInsets.only(right: 20),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      child: ListTile(
-        title: Text(
-          item['nome'] ?? 'Sem Nome',
-          style: const TextStyle(
-            fontFamily: 'UncialAntiqua',
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        onTap: () {
-          // Abre a detail page da categoria correspondente
-          String route = '';
-          if (type == 'monstro') {
-            route = '/bestiaryDetalhe';
-          } else if (type == 'item') {
-            route = '/itensDetalhe';
-          }
+      child: _withLongPress(
+        normalAction: () {
+          String route =
+              (type == 'monstro') ? '/bestiaryDetalhe' : '/itensDetalhe';
           Navigator.pushNamed(context, route, arguments: item);
         },
+        longPressAction: () {
+          String route =
+              (type == 'monstro') ? '/bestiaryDetalhe' : '/itensDetalhe';
+          Navigator.pushNamed(context, route, arguments: item);
+        },
+        child: ListTile(
+          title: Text(
+            item['nome'] ?? 'Sem Nome',
+            style: const TextStyle(
+              fontFamily: 'UncialAntiqua',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  // Função auxiliar para construir a seção de campanhas
+  // Seção para campanhas
   Widget _buildCampaignSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,13 +246,11 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
             ),
         ElevatedButton(
           onPressed: () async {
-            // Abre o pop-up para seleção de campanha
             final result = await showDialog(
               context: context,
               builder: (context) => const CampaignSelectionDialog(),
             );
             if (result != null) {
-              // Certifica-se de que o objeto importado tenha a chave 'done'
               Map<String, dynamic> importedCampaign = Map<String, dynamic>.from(
                 result,
               );
@@ -250,7 +282,7 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
     );
   }
 
-  // Seção para monstros importados utilizando pop-up para seleção
+  // Seção para monstros
   Widget _buildMonsterSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,7 +312,6 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
             ),
         ElevatedButton(
           onPressed: () async {
-            // Abre o pop-up para seleção de monstro
             final result = await showDialog(
               context: context,
               builder: (context) => const MonsterSelectionDialog(),
@@ -311,7 +342,7 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
     );
   }
 
-  // Seção para itens importados utilizando pop-up para seleção
+  // Seção para itens
   Widget _buildItemSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +372,6 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
             ),
         ElevatedButton(
           onPressed: () async {
-            // Abre o pop-up para seleção de item
             final result = await showDialog(
               context: context,
               builder: (context) => const ItemSelectionDialog(),
@@ -471,6 +501,22 @@ class _AventuraDetailPageState extends State<AventuraDetailPage>
           ],
         ),
       ),
+      // Botão flutuante para anotações – passa o adventureId para filtrar as notas
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 70.0),
+        child: FloatingActionButton(
+          backgroundColor: const Color(0xFF1B5E20),
+          child: const Icon(Icons.note, color: Colors.white),
+          onPressed: () {
+            Navigator.pushNamed(
+              context,
+              '/anotacoes',
+              arguments: {'adventureId': widget.adventureId},
+            );
+          },
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
