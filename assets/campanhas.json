@@ -32,7 +32,7 @@
     "dificuldade": "médio",
     "grupoMinimo": 3,
     "localidade": "Lago Sombrius",
-    "corpo": "Lendas contam que nas profundezas do Lago Sombrius habita uma criatura que domina as águas com poderes misteriosos. Agora, estranhos fenômenos e ataques de monstros aquáticos perturbam a paz dos vilarejos à margem. Cabe ao mestre conduzir os aventureiros a descobrir a verdade por trás dessa lenda.",
+    "corpo": "Lendas contam que nas profundezas do ~Lago Sombrius~ habita uma criatura que domina as águas com poderes misteriosos. Agora, estranhos fenômenos e ataques de monstros aquáticos perturbam a paz dos vilarejos à margem. Cabe ao mestre conduzir os aventureiros a descobrir a verdade por trás dessa lenda.",
     "monstros": ["goblin", "kobold", "giant_spider"],
     "chefões": ["young_red_dragon"],
     "recompensas": ["item5", "item6"],

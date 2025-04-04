@@ -1,45 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class CampaignDetailPage extends StatefulWidget {
-  const CampaignDetailPage({super.key});
+class CampaignDetailPage extends StatelessWidget {
+  const CampaignDetailPage({Key? key}) : super(key: key);
 
-  @override
-  _CampaignDetailPageState createState() => _CampaignDetailPageState();
-}
-
-class _CampaignDetailPageState extends State<CampaignDetailPage> {
-  bool isDone = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Carrega o status assim que o contexto estiver disponível.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadDoneStatus();
-    });
-  }
-
-  Future<void> _loadDoneStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final campaign =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    bool done = prefs.getBool("campaign_done_${campaign['id']}") ?? false;
-    setState(() {
-      isDone = done;
-    });
-  }
-
-  Future<void> _toggleDoneStatus(Map<String, dynamic> campaign) async {
-    final prefs = await SharedPreferences.getInstance();
-    bool current = prefs.getBool("campaign_done_${campaign['id']}") ?? false;
-    await prefs.setBool("campaign_done_${campaign['id']}", !current);
-    setState(() {
-      isDone = !current;
-    });
-  }
-
-  // Função para formatar títulos com sombra verde
+  // Widget para formatar títulos com sombra verde (estilo dark fantasy)
   Widget buildFormattedTitle(String text, {double fontSize = 20}) {
     return Text(
       text,
@@ -55,12 +19,65 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
     );
   }
 
+  // Função para processar o corpo do texto e criar TextSpan com formatação
+  List<TextSpan> _parseBodyText(String text) {
+    final RegExp regExp = RegExp(r'~(.*?)~');
+    List<TextSpan> spans = [];
+    int start = 0;
+
+    for (final match in regExp.allMatches(text)) {
+      // Adiciona o texto que está antes dos delimitadores "~"
+      if (match.start > start) {
+        spans.add(
+          TextSpan(
+            text: text.substring(start, match.start),
+            style: const TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      }
+      // Adiciona o texto entre "~" formatado (itálico, negrito e cor verde, sem sombra)
+      spans.add(
+        TextSpan(
+          text: match.group(1),
+          style: const TextStyle(
+            fontSize: 18,
+            color: Color(0xFF1B5E20),
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      );
+      start = match.end;
+    }
+    // Adiciona o restante do texto, se houver
+    if (start < text.length) {
+      spans.add(
+        TextSpan(
+          text: text.substring(start),
+          style: const TextStyle(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+    return spans;
+  }
+
   @override
   Widget build(BuildContext context) {
     final campaign =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final Color backgroundColor = const Color(0xFF121212);
     final Color lightGreen = const Color(0xFF4CAF50);
+
+    final String corpo = campaign['corpo'] ?? '';
+    final List<TextSpan> bodySpans = _parseBodyText(corpo);
 
     return Scaffold(
       extendBody: true,
@@ -104,18 +121,11 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Título formatado com sombra verde
+                // Título formatado
                 buildFormattedTitle(campaign['titulo'] ?? '', fontSize: 20),
                 const SizedBox(height: 16),
-                // Corpo do texto
-                Text(
-                  campaign['corpo'] ?? '',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                // Corpo do texto utilizando RichText para formatação especial
+                RichText(text: TextSpan(children: bodySpans)),
                 const SizedBox(height: 16),
                 // Localidade
                 Text(
@@ -174,7 +184,7 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // NPCs, Monstros, Chefões e Recompensas
+                // NPCs
                 Text(
                   'NPCs:',
                   style: TextStyle(
@@ -193,6 +203,7 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
+                // Monstros
                 Text(
                   'Monstros:',
                   style: TextStyle(
@@ -211,6 +222,7 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
+                // Chefões
                 Text(
                   'Chefões:',
                   style: TextStyle(
@@ -229,6 +241,7 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
+                // Recompensas
                 Text(
                   'Recompensas:',
                   style: TextStyle(
@@ -244,33 +257,6 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                     fontSize: 16,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Botão para marcar/desmarcar como feita
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () => _toggleDoneStatus(campaign),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          isDone ? Colors.red : const Color(0xFF1B5E20),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Text(
-                      isDone ? 'Desmarcar como feita' : 'Marcar como feita',
-                      style: const TextStyle(
-                        fontFamily: 'UncialAntiqua',
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
                   ),
                 ),
               ],
