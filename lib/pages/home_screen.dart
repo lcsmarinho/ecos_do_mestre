@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -177,6 +177,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, '/sobre');
+                },
+              ),
+              const Divider(color: Colors.white24),
+              // Item: Minhas Aventuras
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.explore, color: Colors.white),
+                title: const Text(
+                  'Minhas Aventuras',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/minhasAventuras');
                 },
               ),
             ],

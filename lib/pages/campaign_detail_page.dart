@@ -39,7 +39,7 @@ class CampaignDetailPage extends StatelessWidget {
           ),
         );
       }
-      // Adiciona o texto entre "~" formatado (itálico, negrito e cor verde, sem sombra)
+      // Adiciona o texto entre "~" formatado (itálico, negrito, cor verde e sem sombras)
       spans.add(
         TextSpan(
           text: match.group(1),
@@ -71,11 +71,13 @@ class CampaignDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Alteração importante: trata argumentos nulos para evitar o erro de cast
     final campaign =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>? ??
+        {};
+
     final Color backgroundColor = const Color(0xFF121212);
     final Color lightGreen = const Color(0xFF4CAF50);
-
     final String corpo = campaign['corpo'] ?? '';
     final List<TextSpan> bodySpans = _parseBodyText(corpo);
 
@@ -124,7 +126,7 @@ class CampaignDetailPage extends StatelessWidget {
                 // Título formatado
                 buildFormattedTitle(campaign['titulo'] ?? '', fontSize: 20),
                 const SizedBox(height: 16),
-                // Corpo do texto utilizando RichText para formatação especial
+                // Corpo do texto utilizando RichText
                 RichText(text: TextSpan(children: bodySpans)),
                 const SizedBox(height: 16),
                 // Localidade

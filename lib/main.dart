@@ -12,13 +12,15 @@ import 'pages/encounter_result_page.dart';
 import 'pages/magias_page.dart';
 import 'pages/magias_detail_page.dart';
 import 'pages/about_page.dart';
+import 'pages/minhas_aventuras_page.dart';
+import 'pages/aventura_detail_page.dart';
 
 void main() {
   runApp(const EcosDoMestreApp());
 }
 
 class EcosDoMestreApp extends StatelessWidget {
-  const EcosDoMestreApp({super.key});
+  const EcosDoMestreApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,8 @@ class EcosDoMestreApp extends StatelessWidget {
         '/magias': (context) => const MagiasPage(),
         '/magiasDetalhe': (context) => const MagiasDetailPage(),
         '/sobre': (context) => const AboutPage(),
+        '/aventuraDetalhe': (context) => const AventuraDetailPage(),
+        '/minhasAventuras': (context) => const MinhasAventurasPage(),
       },
     );
   }
