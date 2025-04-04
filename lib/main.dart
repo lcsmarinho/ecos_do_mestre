@@ -15,6 +15,8 @@ import 'pages/about_page.dart';
 import 'pages/minhas_aventuras_page.dart';
 import 'pages/aventura_detail_page.dart';
 import 'pages/anotacoes_page.dart';
+import 'pages/fichas_page.dart';
+import 'pages/fichas_detail_page.dart';
 
 void main() {
   runApp(const EcosDoMestreApp());
@@ -59,6 +61,10 @@ class EcosDoMestreApp extends StatelessWidget {
         },
         '/minhasAventuras': (context) => const MinhasAventurasPage(),
         '/anotacoes': (context) => const AnotacoesPage(),
+        '/fichas': (context) => const FichasPage(),
+        '/fichasDetalhe':
+            (context) =>
+                const FichasDetailPage(), // Rota para Fichas Detalhadas
       },
     );
   }

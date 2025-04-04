@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'welcome_dialog.dart'; // Certifique-se de que o caminho esteja correto
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -7,12 +9,57 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final Color primaryColor = const Color(0xFF0D3B26);
+  final Color accentColor = const Color(0xFF1B5E20);
+  final Color backgroundColor = const Color(0xFF121212);
 
-  final Color primaryColor = const Color(0xFF0D3B26); // Verde Lovecraft escuro
-  final Color accentColor = const Color(0xFF1B5E20); // Verde de destaque
-  final Color backgroundColor = const Color(0xFF121212); // Fundo da aplicação
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    // Exibe o WelcomeDialog após o primeiro frame, se ainda não foi desativado
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showWelcomeDialog());
+  }
+
+  Future<void> _showWelcomeDialog() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hideWelcomePopup = prefs.getBool('hideWelcomePopup') ?? false;
+    if (!hideWelcomePopup) {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const WelcomeDialog(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _navigateToCampanhas() {
+    Navigator.pushNamed(context, '/campanhas');
+  }
+
+  void _navigateToMinhasAventuras() {
+    Navigator.pushNamed(context, '/minhasAventuras');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              // Item: Campanhas
+              // (Itens do menu permanecem inalterados)
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.book, color: Colors.white),
@@ -72,7 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Item: Bestiário
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.pets, color: Colors.white),
@@ -90,7 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Item: Itens
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.inventory, color: Colors.white),
@@ -108,7 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Item: Dados
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.casino, color: Colors.white),
@@ -126,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Item: Encontros
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.flash_on, color: Colors.white),
@@ -144,7 +187,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Item: Magias
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.auto_stories, color: Colors.white),
@@ -162,7 +204,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Item: Sobre
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.info_outline, color: Colors.white),
@@ -180,7 +221,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Divider(color: Colors.white24),
-              // Item: Minhas Aventuras
               ListTile(
                 tileColor: const Color(0xFF2E2E2E),
                 leading: const Icon(Icons.explore, color: Colors.white),
@@ -197,15 +237,40 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pushNamed(context, '/minhasAventuras');
                 },
               ),
+              const Divider(color: Colors.white24),
+              ListTile(
+                tileColor: const Color(0xFF2E2E2E),
+                leading: const Icon(Icons.person, color: Colors.white),
+                title: const Text(
+                  'Fichas de Personagens',
+                  style: TextStyle(
+                    fontFamily: 'UncialAntiqua',
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/fichas');
+                },
+              ),
             ],
           ),
         ),
       ),
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu, size: 36),
-          color: accentColor,
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        leading: AnimatedBuilder(
+          animation: _scaleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: IconButton(
+                icon: const Icon(Icons.menu, size: 36),
+                color: accentColor,
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              ),
+            );
+          },
         ),
         title: Row(
           children: [
@@ -237,6 +302,15 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Stack(
           children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [backgroundColor, Colors.black],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
             SingleChildScrollView(
               padding: const EdgeInsets.symmetric(
                 horizontal: 24.0,
@@ -244,25 +318,20 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Center(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/ecos-nome.png',
-                      height: 150,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 24),
                     Text(
-                      'Bem-vindo ao Ecos do Mestre!',
+                      'Bem-vindo, Mestre!',
                       style: TextStyle(
                         fontFamily: 'UncialAntiqua',
-                        fontSize: 28,
+                        fontSize: 36,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         shadows: const [
                           Shadow(
                             color: Color(0xFF1B5E20),
-                            offset: Offset(1, 1),
-                            blurRadius: 2,
+                            offset: Offset(2, 2),
+                            blurRadius: 4,
                           ),
                         ],
                       ),
@@ -270,56 +339,68 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Use este app para criar, organizar e gerenciar suas campanhas de D&D 5e com estilo. Monte encontros, gerencie bestiários, itens e dados – tudo para transformar suas sessões em aventuras épicas. Em breve, versão exclusiva para jogadores!',
+                      'Este app foi criado para ajudar mestres de RPG a organizar e conduzir campanhas de forma prática e inspiradora. Descubra as funcionalidades que tornarão suas sessões inesquecíveis!',
                       style: TextStyle(
+                        fontFamily: 'UncialAntiqua',
                         fontSize: 18,
                         color: Colors.white70,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/campanhas');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
+                    // Botões empilhados verticalmente
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: _navigateToCampanhas,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accentColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: Text(
+                            'Explorar Campanhas',
+                            style: TextStyle(
+                              fontFamily: 'UncialAntiqua',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _navigateToMinhasAventuras,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accentColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 20,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: Text(
+                            'Criar Aventura',
+                            style: TextStyle(
+                              fontFamily: 'UncialAntiqua',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        'Explorar Campanhas',
-                        style: TextStyle(
-                          fontFamily: 'UncialAntiqua',
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 80),
+                    const SizedBox(height: 32),
                   ],
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  'Se por acaso o app quebrar, baixe ele novamente*',
-                  style: const TextStyle(
-                    fontSize: 8,
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
