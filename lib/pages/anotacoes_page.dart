@@ -18,7 +18,6 @@ class _AnotacoesPageState extends State<AnotacoesPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Recebe o adventureId passado como argumento
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
     _adventureId = args?['adventureId'];
@@ -31,7 +30,6 @@ class _AnotacoesPageState extends State<AnotacoesPage> {
     if (anotacoesString != null) {
       List<dynamic> anotacoesJson = json.decode(anotacoesString);
       setState(() {
-        // Filtra apenas as anotações referentes a esta aventura
         _anotacoes =
             anotacoesJson
                 .map((e) => Map<String, dynamic>.from(e))
@@ -43,11 +41,9 @@ class _AnotacoesPageState extends State<AnotacoesPage> {
 
   Future<void> _saveAnotacoes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Para persistir todas as anotações, precisamos carregar as existentes de outros contextos
     String? allAnotacoesString = prefs.getString('anotacoes');
     List<dynamic> allAnotacoes =
         allAnotacoesString != null ? json.decode(allAnotacoesString) : [];
-    // Remove as anotações deste adventureId e adiciona as atuais
     allAnotacoes.removeWhere((nota) => nota['adventureId'] == _adventureId);
     allAnotacoes.addAll(_anotacoes);
     await prefs.setString('anotacoes', json.encode(allAnotacoes));
@@ -59,7 +55,6 @@ class _AnotacoesPageState extends State<AnotacoesPage> {
       builder: (context) => const AnotacaoDialog(),
     );
     if (result != null) {
-      // Associa a anotação ao adventureId atual
       result['adventureId'] = _adventureId;
       setState(() {
         _anotacoes.add(result);
@@ -98,8 +93,14 @@ class _AnotacoesPageState extends State<AnotacoesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Color accentColor = const Color(0xFF1B5E20);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: accentColor, // botão de voltar em verde
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
           'Anotações',
           style: TextStyle(
@@ -180,7 +181,7 @@ class _AnotacoesPageState extends State<AnotacoesPage> {
                 },
               ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: accentColor,
         child: const Icon(Icons.note_add, color: Colors.white),
         onPressed: _addAnotacao,
       ),

@@ -41,7 +41,6 @@ class _MinhasAventurasPageState extends State<MinhasAventurasPage> {
   }
 
   void _navigateToAventuraDetail({Map<String, dynamic>? aventura}) async {
-    // Navega para a página de criação/edição de aventura.
     final result = await Navigator.pushNamed(
       context,
       '/aventuraDetalhe',
@@ -70,6 +69,11 @@ class _MinhasAventurasPageState extends State<MinhasAventurasPage> {
     final Color backgroundColor = const Color(0xFF121212);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: accentColor, // botão de voltar em verde
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
           'Minhas Aventuras',
           style: TextStyle(
@@ -157,9 +161,6 @@ class _MinhasAventurasPageState extends State<MinhasAventurasPage> {
                   );
                 },
               ),
-      // Botão removido do floatingActionButton, pois agora o botão "Criar Aventura"
-      // está centralizado no corpo (para casos com lista vazia) ou pode ser adicionado
-      // também em um bottomNavigationBar, se desejar.
       bottomNavigationBar:
           _aventuras.isNotEmpty
               ? Padding(
