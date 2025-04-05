@@ -36,6 +36,7 @@ flutter:
     - assets/monstros.json
     - assets/itens.json
     - assets/images/ecos-nome-background.png
+    - assets/images/logo_dev_9-16.png
     - assets/fichas.json
     - assets/magias.json
   uses-material-design: true
